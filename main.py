@@ -4,9 +4,9 @@ import random
 npx.set_np()
 # maybe save in d2l package later
 def synthetic_data(w, b, num_examples):
-    X = np.random.normal(0, 1, (num_examples, len(w)))
+    X = np.random_normal(0, 1, (num_examples, len(w)))
     y = np.dot(X, w) + b
-    y += np.random.normal(0, 0.001, y.shape)
+    y += np.random_normal(0, 0.001, y.shape)
     return X, y
 
 def data_iter (batch_size, features, labels):
@@ -36,7 +36,7 @@ def sgd (params, lr, batch_size):
 true_w = np.array([2, -3.4])
 true_b = 4.2
 features, labels = synthetic_data(true_w, true_b, 1000)
-w = np.random.normal(0, 0.01, (2,1))
+w = np.random_normal(0, 0.01, (2,1))
 b = np.zeros(1)
 batch_size = 10
 
