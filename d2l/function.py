@@ -16,9 +16,10 @@ def linreg(X, w, b):
     return torch.matmul(X, w) + b
 
 def squared_loss(y_hat, y):
-    return ((y_hat - y.reshape(y_hat.shape))**2)
+    return ((y_hat - y.reshape(y_hat.shape))**2) /2
 
-def sgd (params, lr, batch_size):
+def sgd(params, lr, batch_size):
     with torch.no_grad():
         for param in params:
-            param = param - lr * param.grad / batch_size
+            param -= lr * param.grad / batch_size  # Cập nhật inplace
+            param.grad.zero_()  # Xóa gradient
