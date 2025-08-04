@@ -1,5 +1,6 @@
 import torch
 from torch import nn
+from torch.utils.data import DataLoader, TensorDataset
 import random
 import matplotlib.pyplot as plt
 
@@ -23,3 +24,7 @@ def sgd(params, lr, batch_size):
         for param in params:
             param -= lr * param.grad / batch_size  # Cập nhật inplace
             param.grad.zero_()  # Xóa gradient
+
+def load_array(data_arrays, batch_size, is_train = True): # chia minibatch
+    data_set = TensorDataset(*data_arrays)
+    return DataLoader(data_set, batch_size, shuffle= is_train)
