@@ -6,7 +6,7 @@ import torchvision
 from torch.utils import data
 from torchvision import transforms
 from d2l import torch as d2l
-from d2l import function as f
+from save import function as f
 
 d2l.use_svg_display()
 trans = transforms.ToTensor()
