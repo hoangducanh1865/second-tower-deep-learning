@@ -42,7 +42,7 @@ def load_data_fashion_mnist(batch_size, resize = None):
     if resize:
         trans.append(transforms.Resize(resize))
     trans.append(transforms.ToTensor())
-    transform = transforms.Compose(transform)
+    transform = transforms.Compose(trans)
 
     mnist_train = datasets.FashionMNIST(root="../data", train = True, download = True, transform = transform)
     mnist_test = datasets.FashionMNIST(root="../data", train = False, download = True, transform = transform)
@@ -60,9 +60,9 @@ def accuracy (y_hat, y):
 
     return (preds == y).sum().item()
 
-def evaluate_accuracy (net, data_iter):
+def evaluate_accuracy (net, test_iter):
     metric = Accumulator (2)
-    for X, y in data_iter:
+    for X, y in test_iter:
         metric.add(accuracy(net(X), y), y.size)
     return metric[0] / metric[1]
 
@@ -100,6 +100,13 @@ def train_epoch_ch3(net, train_iter, loss_fn, optimizer, device=None):
             y.size(0)                     
         )
     return metric[0] / metric[2], metric[1] / metric[2]
+
+
+
+def train_ch3(net, train_iter, test_iter, loss_fn, num_epochs, optimizer, device = None):
+    for epoch in range (num_epochs):
+        train_loss, train_acc = train_epoch_ch3(net, train_iter, loss_fn, optimizer, device)
+        test_acc = evaluate_accuracy(net, test_iter)
 
 
 
