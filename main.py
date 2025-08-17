@@ -8,7 +8,7 @@ from torchvision import transforms
 from d2l import torch as d2l
 from save import function as f
 
-num_inputs = 784
+num_inputs = 4096
 num_outputs = 10
 
 W = torch.normal(0, 0.01, size=(num_inputs, num_outputs), requires_grad=True)
