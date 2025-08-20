@@ -1,37 +1,32 @@
-# `ToTensor` converts the image data from PIL type to 32-bit floating point
-# tensors. It divides all numbers by 255 so that all pixel values are between
-# 0 and 1
-import torch
-import torchvision
-from torch.utils import data
-from torchvision import transforms
-from d2l import torch as d2l
+import torch 
+import matplotlib.pyplot as plt
 from save import function as f
+from torch import nn
+from d2l import torch as d2l
+batch_size = 256
+train_iter, test_iter = d2l.load_data_fashion_mnist(batch_size)
 
-num_inputs = 4096
-num_outputs = 10
+num_inputs, num_outputs, num_hiddens = 784, 10, 256
+W1 = nn.Parameter(torch.randn(num_inputs, num_hiddens, requires_grad=True))
+b1 = nn.Parameter(torch.zeros(num_hiddens, requires_grad = True))
+W2 = nn.Parameter(torch.randn(num_hiddens, num_outputs, requires_grad = True))
+b2 = nn.Parameter(torch.zeros(num_outputs, requires_grad = True))
 
-W = torch.normal(0, 0.01, size=(num_inputs, num_outputs), requires_grad=True)
-b = torch.zeros(num_outputs, requires_grad=True)
-def softmax(X):
-    X_exp = torch.exp(X)
-    partition = X_exp.sum(1, keepdim=True)
-    return X_exp / partition  # The broadcasting mechanism is applied here
+params = [W1, b1, W2, b2]
+
+def relu(X):
+    a = torch.zeros_like(X)
+    return torch.max(X, a)
+
 def net(X):
-    X = X.reshape((-1, 64 * 64))  # từ ảnh 64x64 → vector 4096 chiều
-    return softmax(torch.matmul(X, W) + b)
+    X = X.reshape((-1, num_inputs))
+    H = relu(X@W1 + b1)
+    return (H@W2 + b2)
 
-def cross_entropy(y_hat, y):
-    return - torch.log(y_hat[range(len(y_hat)), y])
+loss = nn.CrossEntropyLoss(reduction='none')
 
-lr = 0.1
-
-def updater(batch_size):
-    return d2l.sgd([W, b], lr, batch_size)
-num_epochs = 10
-train_iter, test_iter = f.load_data_fashion_mnist(32, resize=64)
-for X, y in train_iter:
-    print(X.shape, X.dtype, y.shape, y.dtype)
-    break
-f.train_ch3(net, train_iter, test_iter, cross_entropy, num_epochs, updater)
+num_epochs, lr = 10, 0.1
+updater = torch.optim.SGD(params, lr = lr)
+f.train_ch3(net, train_iter, test_iter, loss, num_epochs, updater)
+plt.show()
 f.predict_ch3(net, test_iter)
