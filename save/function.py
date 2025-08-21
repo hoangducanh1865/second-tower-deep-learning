@@ -100,7 +100,14 @@ def accuracy(y_hat, y):  #@save
         y_hat = y_hat.argmax(axis=1)
     cmp = y_hat.type(y.dtype) == y
     return float(cmp.type(y.dtype).sum())
-
+def evaluate_loss (loss, net, train_iter):
+    metric = Accumulator(2)
+    for X, y in train_iter:
+        y_hat = net(X)
+        l = loss(y_hat, y)
+        metric.add(l.sum(), l.numel)
+    return metric[0]/metric[1]
+    y_hat = net()
 def evaluate_accuracy(net, data_iter):  #@save
     """Compute the accuracy for a model on a dataset."""
     if isinstance(net, torch.nn.Module):
@@ -203,7 +210,7 @@ def train_ch3(net, train_iter, test_iter, loss, num_epochs, updater):  #@save
     assert train_acc <= 1 and train_acc > 0.7, train_acc
     assert test_acc <= 1 and test_acc > 0.7, test_acc
 
-def predict_ch3(net, test_iter, n=6):  #@save
+def predict_ch3(net, test_iter, n=6):  
     """Predict labels (defined in Chapter 3)."""
     for X, y in test_iter:
         break
