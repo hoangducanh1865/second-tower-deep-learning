@@ -1,25 +1,18 @@
 import torch
-from torch import nn
-from save import function as f
-num_inputs, num_hiddens, num_outputs = 28*28, 256, 10
+from src.model.RNN.utils import TextDataset
+from src.model.RNN.RNN import RNNFromScratch
 
-net = nn.Sequential(nn.Flatten(),
-                    nn.Linear(num_inputs, num_hiddens),
-                    nn.ReLU(),
-                    nn.Linear(num_hiddens, num_outputs))
-
-def init_weights(m):
-    if type(m) == nn.Linear:
-        nn.init.normal_(m.weight, std =0.01)
-
-net.apply(init_weights)
-batch_size, lr, num_epochs = 256, 0.1, 10
-loss = nn.CrossEntropyLoss(reduction = "none")
-updater = torch.optim.SGD(net.parameters(), lr = lr, weight_decay= 0.0005)
-train_iter, test_iter = f.load_data_fashion_mnist(batch_size= batch_size)
-f.train_ch3(net, train_iter, test_iter, loss, num_epochs, updater)
-print(f.evaluate_accuracy(net, test_iter))
-print(f.evaluate_accuracy(net, train_iter))
+device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+data = TextDataset(batch_size=32, num_steps=35, token='char')
+train_iter = data.get_dataloader(train=True)
+vocab = data.vocab
 
 
+print(vocab["d"])
+# print(type(len(vocab)))
+# print(type(1))
+num_hiddens = 256
+model = RNNFromScratch(vocab_size=len(vocab), num_hiddens=num_hiddens, device=device)
+model.train(train_iter, vocab, lr=1, num_epochs=50)
 
+print(model.predict('time traveller', 50, vocab))
