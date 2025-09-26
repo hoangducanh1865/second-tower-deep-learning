@@ -5,7 +5,7 @@ import requests
 import torch
 from torch.utils.data import TensorDataset, DataLoader
 
-#
+
 class Vocab:
     """Vocabulary for text tokens."""
     def __init__(self, tokens=None, min_freq=0, reserved_tokens=None):

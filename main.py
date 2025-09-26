@@ -10,7 +10,6 @@ vocab = data.vocab
 
 print(vocab["d"])
 # print(type(len(vocab)))
-# print(type(1))
 num_hiddens = 256
 model = RNNFromScratch(vocab_size=len(vocab), num_hiddens=num_hiddens, device=device)
 model.train(train_iter, vocab, lr=1, num_epochs=50)

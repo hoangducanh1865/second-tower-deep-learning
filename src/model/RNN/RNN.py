@@ -43,7 +43,7 @@ class RNNFromScratch:
             H = torch.tanh(torch.mm(x, W_xh) + torch.mm(H, W_hh) + b_h)
             Y = torch.mm(H, W_hq) + b_q
             outputs.append(Y)
-        return torch.cat(outputs, dim=0), (H,)
+        return torch.cat(outputs, dim=0), (H,) #@TODO: kiểu dữ liệu
 
     
     def grad_clipping(self, theta):
@@ -82,24 +82,25 @@ class RNNFromScratch:
                 for s in state:
                     s.detach_()
 
-            y = Y.T.reshape(-1)
+            y = Y.T.reshape(-1) #@TODO chuyển vị và reshape làm gì 
             X, y = X.to(self.device), y.to(self.device)
             y_hat, state = self.forward(X, state)
-            l = loss(y_hat, y.long()).mean()
+            l = loss(y_hat, y.long()).mean() 
 
             updater.zero_grad()
-            l.backward()
+            l.backward()      #@TODO: biểu diễn code loss
             self.grad_clipping(1)
             updater.step()
 
             metric.add(l * y.numel(), y.numel())
-
+            print(l)
         return math.exp(metric[0] / metric[1]), metric[1] / timer.stop()
+        
 
     
     def train(self, train_iter, vocab, lr, num_epochs, use_random_iter=False):
         loss = nn.CrossEntropyLoss()
-        updater = torch.optim.SGD(self.params, lr=lr)
+        updater = torch.optim.SGD(self.params, lr=lr) #@TODO: ADAM optimizer công thức cáp nhật tham số 
         
 
         for epoch in range(num_epochs):
